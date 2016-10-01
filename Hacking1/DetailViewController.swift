@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Social
 
 class DetailViewController: UIViewController {
 
@@ -14,17 +15,20 @@ class DetailViewController: UIViewController {
   
   var selectedImage: String?
   
-    override func viewDidLoad() {
-      super.viewDidLoad()
+  override func viewDidLoad() {
+    super.viewDidLoad()
 
-      // Do any additional setup after loading the view.
-      if let imageToLoad = selectedImage {
-        imageView.image = UIImage(named: imageToLoad)
-        
-      }
-      
-      title = selectedImage
+    // Do any additional setup after loading the view.
+    if let imageToLoad = selectedImage {
+      imageView.image = UIImage(named: imageToLoad)
     }
+      
+    title = selectedImage
+    // .action shows an arrow coming out of a box (user can do something when tapped icon)
+    // when tapped, call the shareTapped method
+    // target tells the button that the method belongs to the current view controller (self)
+    navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(shareTapped))
+  }
   
   override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
@@ -35,11 +39,26 @@ class DetailViewController: UIViewController {
     super.viewWillDisappear(animated)
     navigationController?.hidesBarsOnTap = false
   }
-
-    override func didReceiveMemoryWarning() {
-      super.didReceiveMemoryWarning()
-      // Dispose of any resources that can be recreated.
+  
+  func shareTapped(){
+    // UIActivityViewController is built-in ios sharing with other apps and services
+  //  let vc = UIActivityViewController(activityItems: [imageView.image!], applicationActivities: [])
+    // this tells ios where the view controller should appear from - for ipad, where the popover won't take up the whole screen
+  //  vc.popoverPresentationController?.barButtonItem = navigationItem.rightBarButtonItem
+  //  present(vc, animated: true)
+    
+    if let(vc) = SLComposeViewController(forServiceType: SLServiceTypeFacebook){
+      vc.setInitialText("Look at this great picture!")
+      vc.add(imageView.image!)
+      vc.add(URL(string: "http://www.photolib.noaa.gov/nssl"))
+      present(vc, animated: true)
     }
+  }
+  
+  override func didReceiveMemoryWarning() {
+    super.didReceiveMemoryWarning()
+    // Dispose of any resources that can be recreated.
+  }
 
     /*
     // MARK: - Navigation
